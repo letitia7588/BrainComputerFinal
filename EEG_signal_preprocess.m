@@ -165,21 +165,17 @@ function save_features(output_folder, subj, game, data_matrix, label, srate, cha
     overlap = 256; % 重疊部分大小
     nfft = 512; % FFT點數
 
-    % 計算功率譜密度
-    freqs = (0:nfft-1) * (srate / nfft);
-    delta_band = [1 4];
-    theta_band = [4 8];
-    alpha_band = [8 13];
-    beta_band = [13 30];
-
-    delta_power = zeros(num_channels, 1);
-    theta_power = zeros(num_channels, 1);
-    alpha_power = zeros(num_channels, 1);
-    beta_power = zeros(num_channels, 1);
+    % 初始化特徵矩陣
+    features_matrix = zeros(num_channels, 11); % 每個通道有11個特徵
 
     for ch = 1:num_channels
         x = data_matrix(ch, :);
         x = x - mean(x); % 去除平均值
+
+        % 計算時間域特徵
+        mean_value = mean(x);
+        peak_to_peak = max(x) - min(x);
+        peak_to_peak_time = find(x == max(x), 1) - find(x == min(x), 1);
 
         % 手動實現分段
         num_segments = floor((num_points - overlap) / (window_size - overlap));
@@ -198,18 +194,37 @@ function save_features(output_folder, subj, game, data_matrix, label, srate, cha
         Pxx = mean(Pxx, 2);
 
         % 計算頻帶功率
-        delta_power(ch) = sum(Pxx(freqs >= delta_band(1) & freqs <= delta_band(2)));
-        theta_power(ch) = sum(Pxx(freqs >= theta_band(1) & freqs <= theta_band(2)));
-        alpha_power(ch) = sum(Pxx(freqs >= alpha_band(1) & freqs <= alpha_band(2)));
-        beta_power(ch) = sum(Pxx(freqs >= beta_band(1) & freqs <= beta_band(2)));
+        delta_power = sum(Pxx((0:nfft/2) * (srate / nfft) >= 1 & (0:nfft/2) * (srate / nfft) <= 4));
+        theta_power = sum(Pxx((0:nfft/2) * (srate / nfft) >= 4 & (0:nfft/2) * (srate / nfft) <= 8));
+        alpha_power = sum(Pxx((0:nfft/2) * (srate / nfft) >= 8 & (0:nfft/2) * (srate / nfft) <= 13));
+        beta_power = sum(Pxx((0:nfft/2) * (srate / nfft) >= 13 & (0:nfft/2) * (srate / nfft) <= 30));
+
+        % 計算STFT特徵
+        window = hamming(window_size);
+        [s, f, t, ps] = spectrogram(x, window, overlap, nfft, srate);
+        stft_mean = mean(abs(ps(:)));
+        stft_variance = var(abs(ps(:)));
+
+        % 計算WT特徵
+        [c, l] = wavedec(x, 5, 'db4');
+        wt_energy = sum(abs(c).^2);
+        wt_entropy = wentropy(c, 'shannon');
+
+        % 將所有特徵放入特徵矩陣
+        features_matrix(ch, :) = [mean_value, peak_to_peak, peak_to_peak_time, delta_power, theta_power, alpha_power, beta_power, stft_mean, stft_variance, wt_energy, wt_entropy];
     end
 
-    % 將特徵組合成表格
+    % 將特徵組合成
     channel_names = {chanlocs.labels};
-    features = table(channel_names', delta_power, theta_power, alpha_power, beta_power, ...
-        'VariableNames', {'Channel', 'Delta_Power', 'Theta_Power', 'Alpha_Power', 'Beta_Power'});
+    features = table(channel_names', features_matrix(:, 1), features_matrix(:, 2), features_matrix(:, 3), features_matrix(:, 4), ...
+                     features_matrix(:, 5), features_matrix(:, 6), features_matrix(:, 7), features_matrix(:, 8), features_matrix(:, 9), ...
+                     features_matrix(:, 10), features_matrix(:, 11), ...
+        'VariableNames', {'Channel', 'Mean', 'Peak_to_Peak', 'Peak_to_Peak_Time', 'Delta_Power', 'Theta_Power', 'Alpha_Power', 'Beta_Power', 'STFT_Mean', 'STFT_Variance', 'WT_Energy', 'WT_Entropy'});
 
     % 儲存特徵到CSV
     csv_filename = fullfile(output_folder, sprintf('S%02d_G%d_%s_features.csv', subj, game, label));
     writetable(features, csv_filename);
+    
+    % 日誌輸出
+    fprintf('Features saved to %s\n', csv_filename);
 end
