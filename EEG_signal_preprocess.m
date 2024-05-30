@@ -33,9 +33,14 @@ ic_colors = [0 0.4470 0.7410; % Brain - blue
              0.6350 0.0780 0.1840]; % Other - dark red
 
 % 初始化IC計數表
+<<<<<<< HEAD
 ic_counts_raw = zeros(28 * 4, length(ic_labels));
 ic_counts_filtered = zeros(28 * 4, length(ic_labels));
 ic_counts_asr = zeros(28 * 4, length(ic_labels));
+ic_counts_raw = zeros(28, length(ic_labels));
+ic_counts_filtered = zeros(28, length(ic_labels));
+ic_counts_asr = zeros(28, length(ic_labels));
+>>>>>>> fda00011ce0324980318a4716ddddc235ec1631d
 
 % 逐一處理每個受試者和遊戲
 for subj = 1:28
@@ -45,8 +50,16 @@ for subj = 1:28
             % 載入原始EEG資料
             raw_eeg_file = fullfile(data_folder, sprintf('S%02d', subj), 'Raw EEG Data', 'csv', sprintf('S%02dG%dAllRawChannels.csv', subj, game));
             eeg_data = readtable(raw_eeg_file);
-
             data_matrix = eeg_data{:,:}';
+            
+            % 將表格數據轉換成矩陣
+            data_matrix = eeg_data{:,:}';
+
+            % 檢查數據矩陇的維度
+            [num_channels, num_points] = size(data_matrix);
+            if num_channels ~= length(channel_locs) || num_points <= 1
+                error('數據矩陇維度不正確');
+            end
 
             % 取樣率
             srate = 128; 
@@ -110,6 +123,10 @@ for subj = 1:28
             ic_counts_filtered(row_idx, :) = temp_counts_filtered;
             ic_counts_asr(row_idx, :) = temp_counts_asr;
 
+            ic_counts_raw(subj, :) = ic_counts_raw(subj, :) + sum(ic_probabilities_raw > 0.5, 1);
+            ic_counts_filtered(subj, :) = ic_counts_filtered(subj, :) + sum(ic_probabilities_filtered > 0.5, 1);
+            ic_counts_asr(subj, :) = ic_counts_asr(subj, :) + sum(ic_probabilities_asr > 0.5, 1);
+
             % 儲存特徵到CSV
             save_features(output_folder, subj, game, data_matrix, 'raw', srate, std_chanlocs);
             save_features(output_folder, subj, game, EEG_filtered.data, 'filtered', srate, std_chanlocs);
@@ -146,6 +163,7 @@ for subj = 1:28
             % 儲存圖表
             saveas(gcf, fullfile(analysis_charts_folder, sprintf('S%02dG%d_ICLabel_Analysis.png', subj, game)));
             close(gcf);
+            saveas(gcf, fullfile(analysis_charts_folder, sprintf('S%02dG%d_ICLabel_Analysis.png', subj, game)));
         catch ME
             warning('Error processing subject %d, game %d: %s', subj, game, ME.message);
         end
@@ -167,6 +185,16 @@ writetable(ic_count_table_filtered, fullfile(output_folder, 'IC_classification_c
 ic_count_table_asr = array2table([ic_counts_asr; avg_ic_counts_asr], 'VariableNames', ic_labels, 'RowNames', [arrayfun(@(x) sprintf('S%02dG%d', ceil(x/4), mod(x-1, 4)+1), 1:112, 'UniformOutput', false), {'Average'}]);
 writetable(ic_count_table_asr, fullfile(output_folder, 'IC_classification_counts_asr.csv'));
 
+ic_count_table_raw = array2table([ic_counts_raw; avg_ic_counts_raw], 'VariableNames', ic_labels, 'RowNames', [arrayfun(@(x) sprintf('S%02d', x), 1:28, 'UniformOutput', false), {'Average'}]);
+writetable(ic_count_table_raw, fullfile(output_folder, 'IC_classification_counts_raw.csv'));
+
+ic_count_table_filtered = array2table([ic_counts_filtered; avg_ic_counts_filtered], 'VariableNames', ic_labels, 'RowNames', [arrayfun(@(x) sprintf('S%02d', x), 1:28, 'UniformOutput', false), {'Average'}]);
+writetable(ic_count_table_filtered, fullfile(output_folder, 'IC_classification_counts_filtered.csv'));
+
+ic_count_table_asr = array2table([ic_counts_asr; avg_ic_counts_asr], 'VariableNames', ic_labels, 'RowNames', [arrayfun(@(x) sprintf('S%02d', x), 1:28, 'UniformOutput', false), {'Average'}]);
+writetable(ic_count_table_asr, fullfile(output_folder, 'IC_classification_counts_asr.csv'));
+
+
 function save_features(output_folder, subj, game, data_matrix, label, srate, chanlocs)
     num_channels = size(data_matrix, 1);
     num_points = size(data_matrix, 2);
@@ -182,6 +210,7 @@ function save_features(output_folder, subj, game, data_matrix, label, srate, cha
         x = data_matrix(ch, :);
         x = x - mean(x); % 移除平均值
 
+
         % Time Domain Features
         mean_value = mean(x);
         peak_to_peak = max(x) - min(x);
@@ -191,6 +220,7 @@ function save_features(output_folder, subj, game, data_matrix, label, srate, cha
         if peak_to_peak_time == 0
             peak_to_peak_time = 1; % Avoid division by zero
         end
+
         peak_to_peak_slope = peak_to_peak / peak_to_peak_time;
         signal_power = mean(x.^2);
         kurtosis_value = kurtosis(x);
@@ -217,12 +247,12 @@ function save_features(output_folder, subj, game, data_matrix, label, srate, cha
         wt_energy = sum(abs(c).^2);
         wt_entropy = wentropy(c, 'shannon');
 
-        % 填特徵矩陣值
+        % Fill feature matrix
         features_matrix(ch, :) = [mean_value, peak_to_peak, peak_to_peak_time, peak_to_peak_slope, signal_power, kurtosis_value, mobility, complexity, lar, ...
                                   delta_power, theta_power, alpha_power, beta_power, gamma_power, wt_energy, wt_entropy];
     end
 
-    % features table
+    % feature table
     channel_names = {chanlocs.labels};
     features = table(channel_names', features_matrix(:, 1), features_matrix(:, 2), features_matrix(:, 3), features_matrix(:, 4), ...
                      features_matrix(:, 5), features_matrix(:, 6), features_matrix(:, 7), features_matrix(:, 8), features_matrix(:, 9), ...
