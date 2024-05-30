@@ -33,26 +33,20 @@ ic_colors = [0 0.4470 0.7410; % Brain - blue
              0.6350 0.0780 0.1840]; % Other - dark red
 
 % 初始化IC計數表
-ic_counts_raw = zeros(28, length(ic_labels));
-ic_counts_filtered = zeros(28, length(ic_labels));
-ic_counts_asr = zeros(28, length(ic_labels));
+ic_counts_raw = zeros(28 * 4, length(ic_labels));
+ic_counts_filtered = zeros(28 * 4, length(ic_labels));
+ic_counts_asr = zeros(28 * 4, length(ic_labels));
 
 % 逐一處理每個受試者和遊戲
 for subj = 1:28
     for game = 1:4
+        row_idx = (subj - 1) * 4 + game;  % 計算每行的索引
         try
             % 載入原始EEG資料
             raw_eeg_file = fullfile(data_folder, sprintf('S%02d', subj), 'Raw EEG Data', 'csv', sprintf('S%02dG%dAllRawChannels.csv', subj, game));
             eeg_data = readtable(raw_eeg_file);
 
-            % 將表格數據轉換成矩陣
             data_matrix = eeg_data{:,:}';
-
-            % 檢查數據矩陇的維度
-            [num_channels, num_points] = size(data_matrix);
-            if num_channels ~= length(channel_locs) || num_points <= 1
-                error('數據矩陇維度不正確');
-            end
 
             % 取樣率
             srate = 128; 
@@ -95,10 +89,26 @@ for subj = 1:28
             save(fullfile(iclabel_results_folder, sprintf('S%02dG%d_ICLabel_asr.mat', subj, game)), 'ic_probabilities_asr');
 
             % 更新IC計數
-            ic_counts_raw(subj, :) = ic_counts_raw(subj, :) + sum(ic_probabilities_raw > 0.5, 1);
-            ic_counts_filtered(subj, :) = ic_counts_filtered(subj, :) + sum(ic_probabilities_filtered > 0.5, 1);
-            ic_counts_asr(subj, :) = ic_counts_asr(subj, :) + sum(ic_probabilities_asr > 0.5, 1);
+            [~, max_idx_raw] = max(ic_probabilities_raw, [], 2);
+            [~, max_idx_filtered] = max(ic_probabilities_filtered, [], 2);
+            [~, max_idx_asr] = max(ic_probabilities_asr, [], 2);
 
+            % 初始化臨時計數
+            temp_counts_raw = zeros(1, length(ic_labels));
+            temp_counts_filtered = zeros(1, length(ic_labels));
+            temp_counts_asr = zeros(1, length(ic_labels));
+
+            % 更新臨時計數
+            for i = 1:length(max_idx_raw)
+                temp_counts_raw(max_idx_raw(i)) = temp_counts_raw(max_idx_raw(i)) + 1;
+                temp_counts_filtered(max_idx_filtered(i)) = temp_counts_filtered(max_idx_filtered(i)) + 1;
+                temp_counts_asr(max_idx_asr(i)) = temp_counts_asr(max_idx_asr(i)) + 1;
+            end
+
+            % 將臨時計數保存到總表
+            ic_counts_raw(row_idx, :) = temp_counts_raw;
+            ic_counts_filtered(row_idx, :) = temp_counts_filtered;
+            ic_counts_asr(row_idx, :) = temp_counts_asr;
 
             % 儲存特徵到CSV
             save_features(output_folder, subj, game, data_matrix, 'raw', srate, std_chanlocs);
@@ -132,8 +142,10 @@ for subj = 1:28
             xlabel('IC Number');
             ylabel('Probability');
             legend(ic_labels, 'Location', 'northeastoutside');
-
+            
+            % 儲存圖表
             saveas(gcf, fullfile(analysis_charts_folder, sprintf('S%02dG%d_ICLabel_Analysis.png', subj, game)));
+            close(gcf);
         catch ME
             warning('Error processing subject %d, game %d: %s', subj, game, ME.message);
         end
@@ -146,17 +158,15 @@ avg_ic_counts_filtered = mean(ic_counts_filtered, 1);
 avg_ic_counts_asr = mean(ic_counts_asr, 1);
 
 % 儲存IC數量統計結果
-ic_count_table_raw = array2table([ic_counts_raw; avg_ic_counts_raw], 'VariableNames', ic_labels, 'RowNames', [arrayfun(@(x) sprintf('S%02d', x), 1:28, 'UniformOutput', false), {'Average'}]);
+ic_count_table_raw = array2table([ic_counts_raw; avg_ic_counts_raw], 'VariableNames', ic_labels, 'RowNames', [arrayfun(@(x) sprintf('S%02dG%d', ceil(x/4), mod(x-1, 4)+1), 1:112, 'UniformOutput', false), {'Average'}]);
 writetable(ic_count_table_raw, fullfile(output_folder, 'IC_classification_counts_raw.csv'));
 
-ic_count_table_filtered = array2table([ic_counts_filtered; avg_ic_counts_filtered], 'VariableNames', ic_labels, 'RowNames', [arrayfun(@(x) sprintf('S%02d', x), 1:28, 'UniformOutput', false), {'Average'}]);
+ic_count_table_filtered = array2table([ic_counts_filtered; avg_ic_counts_filtered], 'VariableNames', ic_labels, 'RowNames', [arrayfun(@(x) sprintf('S%02dG%d', ceil(x/4), mod(x-1, 4)+1), 1:112, 'UniformOutput', false), {'Average'}]);
 writetable(ic_count_table_filtered, fullfile(output_folder, 'IC_classification_counts_filtered.csv'));
 
-ic_count_table_asr = array2table([ic_counts_asr; avg_ic_counts_asr], 'VariableNames', ic_labels, 'RowNames', [arrayfun(@(x) sprintf('S%02d', x), 1:28, 'UniformOutput', false), {'Average'}]);
+ic_count_table_asr = array2table([ic_counts_asr; avg_ic_counts_asr], 'VariableNames', ic_labels, 'RowNames', [arrayfun(@(x) sprintf('S%02dG%d', ceil(x/4), mod(x-1, 4)+1), 1:112, 'UniformOutput', false), {'Average'}]);
 writetable(ic_count_table_asr, fullfile(output_folder, 'IC_classification_counts_asr.csv'));
 
-
-% 定義函數來儲存特徵到CSV
 function save_features(output_folder, subj, game, data_matrix, label, srate, chanlocs)
     num_channels = size(data_matrix, 1);
     num_points = size(data_matrix, 2);
@@ -166,65 +176,65 @@ function save_features(output_folder, subj, game, data_matrix, label, srate, cha
     nfft = 512; % FFT點數
 
     % 初始化特徵矩陣
-    features_matrix = zeros(num_channels, 11); % 每個通道有11個特徵
+    features_matrix = zeros(num_channels, 16); % 9 time + 5 frequency + 2 wavelet
 
     for ch = 1:num_channels
         x = data_matrix(ch, :);
-        x = x - mean(x); % 去除平均值
+        x = x - mean(x); % 移除平均值
 
-        % 計算時間域特徵
+        % Time Domain Features
         mean_value = mean(x);
         peak_to_peak = max(x) - min(x);
-        peak_to_peak_time = find(x == max(x), 1) - find(x == min(x), 1);
-
-        % 手動實現分段
-        num_segments = floor((num_points - overlap) / (window_size - overlap));
-        segments = zeros(window_size, num_segments);
-        for i = 1:num_segments
-            start_idx = (i - 1) * (window_size - overlap) + 1;
-            end_idx = start_idx + window_size - 1;
-            segments(:, i) = x(start_idx:end_idx);
+        [~, max_idx] = max(x);
+        [~, min_idx] = min(x);
+        peak_to_peak_time = abs(max_idx - min_idx);
+        if peak_to_peak_time == 0
+            peak_to_peak_time = 1; % Avoid division by zero
         end
+        peak_to_peak_slope = peak_to_peak / peak_to_peak_time;
+        signal_power = mean(x.^2);
+        kurtosis_value = kurtosis(x);
+        mobility = std(diff(x)) / std(x);
+        complexity = std(diff(diff(x))) / std(diff(x));
+        lar = max_idx / max(x);
 
-        X = fft(segments, nfft); % FFT
-        Pxx = (1 / (srate * window_size)) * abs(X).^2; % 功率譜
-        Pxx = Pxx(1:nfft/2 + 1, :); % 只取前半段
+        % 使用STFT計算PSD
+        [S, F, T, P] = spectrogram(x, window_size, overlap, nfft, srate);
+        Pxx = mean(abs(S).^2, 2); % 平均功率譜密度
 
-        % 平均功率譜
-        Pxx = mean(Pxx, 2);
+        % 確保每個頻段都使用所有分段
+        freqs = F;
 
         % 計算頻帶功率
-        delta_power = sum(Pxx((0:nfft/2) * (srate / nfft) >= 1 & (0:nfft/2) * (srate / nfft) <= 4));
-        theta_power = sum(Pxx((0:nfft/2) * (srate / nfft) >= 4 & (0:nfft/2) * (srate / nfft) <= 8));
-        alpha_power = sum(Pxx((0:nfft/2) * (srate / nfft) >= 8 & (0:nfft/2) * (srate / nfft) <= 13));
-        beta_power = sum(Pxx((0:nfft/2) * (srate / nfft) >= 13 & (0:nfft/2) * (srate / nfft) <= 30));
+        delta_power = bandpower(Pxx, freqs, [1 4], 'psd');
+        theta_power = bandpower(Pxx, freqs, [4 8], 'psd');
+        alpha_power = bandpower(Pxx, freqs, [8 13], 'psd');
+        beta_power = bandpower(Pxx, freqs, [13 30], 'psd');
+        gamma_power = bandpower(Pxx, freqs, [30 50], 'psd');
 
-        % 計算STFT特徵
-        window = hamming(window_size);
-        [s, f, t, ps] = spectrogram(x, window, overlap, nfft, srate);
-        stft_mean = mean(abs(ps(:)));
-        stft_variance = var(abs(ps(:)));
-
-        % 計算WT特徵
+        % Wavelet Domain Features
         [c, l] = wavedec(x, 5, 'db4');
         wt_energy = sum(abs(c).^2);
         wt_entropy = wentropy(c, 'shannon');
 
-        % 將所有特徵放入特徵矩陣
-        features_matrix(ch, :) = [mean_value, peak_to_peak, peak_to_peak_time, delta_power, theta_power, alpha_power, beta_power, stft_mean, stft_variance, wt_energy, wt_entropy];
+        % 填特徵矩陣值
+        features_matrix(ch, :) = [mean_value, peak_to_peak, peak_to_peak_time, peak_to_peak_slope, signal_power, kurtosis_value, mobility, complexity, lar, ...
+                                  delta_power, theta_power, alpha_power, beta_power, gamma_power, wt_energy, wt_entropy];
     end
 
-    % 將特徵組合成
+    % features table
     channel_names = {chanlocs.labels};
     features = table(channel_names', features_matrix(:, 1), features_matrix(:, 2), features_matrix(:, 3), features_matrix(:, 4), ...
                      features_matrix(:, 5), features_matrix(:, 6), features_matrix(:, 7), features_matrix(:, 8), features_matrix(:, 9), ...
-                     features_matrix(:, 10), features_matrix(:, 11), ...
-        'VariableNames', {'Channel', 'Mean', 'Peak_to_Peak', 'Peak_to_Peak_Time', 'Delta_Power', 'Theta_Power', 'Alpha_Power', 'Beta_Power', 'STFT_Mean', 'STFT_Variance', 'WT_Energy', 'WT_Entropy'});
+                     features_matrix(:, 10), features_matrix(:, 11), features_matrix(:, 12), features_matrix(:, 13), features_matrix(:, 14), features_matrix(:, 15), ...
+                     features_matrix(:, 16), ...
+        'VariableNames', {'Channel', 'Mean', 'Peak_to_Peak', 'Peak_to_Peak_Time', 'Peak_to_Peak_Slope', 'Signal_Power', 'Kurtosis', 'Mobility', 'Complexity', 'LAR', ...
+                          'Delta_Power', 'Theta_Power', 'Alpha_Power', 'Beta_Power', 'Gamma_Power', 'WT_Energy', 'WT_Entropy'});
 
-    % 儲存特徵到CSV
+    % Save features to CSV
     csv_filename = fullfile(output_folder, sprintf('S%02d_G%d_%s_features.csv', subj, game, label));
     writetable(features, csv_filename);
-    
-    % 日誌輸出
+
+    % Log output
     fprintf('Features saved to %s\n', csv_filename);
 end
