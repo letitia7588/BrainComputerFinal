@@ -33,14 +33,12 @@ ic_colors = [0 0.4470 0.7410; % Brain - blue
              0.6350 0.0780 0.1840]; % Other - dark red
 
 % 初始化IC計數表
-<<<<<<< HEAD
 ic_counts_raw = zeros(28 * 4, length(ic_labels));
 ic_counts_filtered = zeros(28 * 4, length(ic_labels));
 ic_counts_asr = zeros(28 * 4, length(ic_labels));
 ic_counts_raw = zeros(28, length(ic_labels));
 ic_counts_filtered = zeros(28, length(ic_labels));
 ic_counts_asr = zeros(28, length(ic_labels));
->>>>>>> fda00011ce0324980318a4716ddddc235ec1631d
 
 % 逐一處理每個受試者和遊戲
 for subj = 1:28
