@@ -53,12 +53,6 @@ for subj = 1:28
             % 將表格數據轉換成矩陣
             data_matrix = eeg_data{:,:}';
 
-            % 檢查數據矩陇的維度
-            [num_channels, num_points] = size(data_matrix);
-            if num_channels ~= length(channel_locs) || num_points <= 1
-                error('數據矩陇維度不正確');
-            end
-
             % 取樣率
             srate = 128; 
 
@@ -199,7 +193,7 @@ function save_features(output_folder, subj, game, data_matrix, label, srate, cha
 
     window_size = 512; % 窗口大小
     overlap = 256; % 重疊部分大小
-    nfft = 512; % FFT點數
+    nfft = 512; % FFT
 
     % 初始化特徵矩陣
     features_matrix = zeros(num_channels, 16); % 9 time + 5 frequency + 2 wavelet
