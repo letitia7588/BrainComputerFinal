@@ -50,7 +50,8 @@ Authors: 111064514 柯昱鈴 112062674 羅士軒 112065501 簡辰穎
 
     - Analyzing the hidden independent components within EEG using ICA with ICLabel
     
-      ![Uploading image.png…]()
+      ![image](https://github.com/letitia7588/BrainComputerFinal/assets/170433140/f87885ac-afa9-4b6c-9100-8158667c2123)
+
 
 
 
