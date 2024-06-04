@@ -61,7 +61,8 @@ Authors: 111064514 柯昱鈴 112062674 羅士軒 112065501 簡辰穎
 
 - The picture below is our BCI architecture
 
-    ![截圖 2024-06-03 下午2.24.16](https://hackmd.io/_uploads/rkPj5Ei4C.png =700x)
+    ![image](https://github.com/letitia7588/BrainComputerFinal/assets/170433140/5afc10bd-12a0-4bb9-9bdd-e824b7c8f212)
+
     
 - Input/Output Mechanisms:
     - Input: Raw EEG data collected from subjects using the EMOTIV EPOC+ EEG device.
@@ -73,8 +74,8 @@ Authors: 111064514 柯昱鈴 112062674 羅士軒 112065501 簡辰穎
 - Feature Extraction Approaches:
     - We proceeded with feature extraction, referencing [Khan and Rasool (2022)](#ref2). The features were categorized into three domains, as shown in the table below:
         
-    ![截圖 2024-06-03 下午1.53.46](https://hackmd.io/_uploads/By1c5Rq4A.png)
-- Classification
+    ![image](https://github.com/letitia7588/BrainComputerFinal/assets/170433140/922078ba-13e1-4b05-bb39-6cb9de93472b)
+
 
   After transforming the data, we applied three different machine learning models to classify the emotions:
 
@@ -89,7 +90,8 @@ Authors: 111064514 柯昱鈴 112062674 羅士軒 112065501 簡辰穎
     
     The hybrid features are shown in the below table[[2]](#ref2):
     
-    ![螢幕擷取畫面 2024-06-04 230835](https://hackmd.io/_uploads/Ska66a24R.png)
+    ![image](https://github.com/letitia7588/BrainComputerFinal/assets/170433140/5a213ea0-0969-4242-925c-27d894116c72)
+
     
     The reason of choosing hybrid data is that it is proved to have higher importance[[2]](#ref2).
 
@@ -105,21 +107,27 @@ Authors: 111064514 柯昱鈴 112062674 羅士軒 112065501 簡辰穎
     
     * **Gradient Boosting**
     
-    ![image](https://hackmd.io/_uploads/BJKEk334R.png)
+    ![image](https://github.com/letitia7588/BrainComputerFinal/assets/170433140/23a05592-9560-4e11-98f2-91861a57703e)
+
     
-    ![image](https://hackmd.io/_uploads/Hkc_B2hEA.png)
+    ![image](https://github.com/letitia7588/BrainComputerFinal/assets/170433140/fdb5e1e7-9875-4e53-bd7b-8077b41a6fc9)
+
     
     * **Decision Tree**
     
-    ![image](https://hackmd.io/_uploads/BycUe33VA.png)
+    ![image](https://github.com/letitia7588/BrainComputerFinal/assets/170433140/bd51e9a4-4e17-402b-a9e3-46f9850b9715)
+
     
-    ![image](https://hackmd.io/_uploads/SkryIhnN0.png)
+    ![image](https://github.com/letitia7588/BrainComputerFinal/assets/170433140/9a7f9043-558c-407f-980e-16bf8792e6f4)
+
     
     * **KNN**
     
-    ![image](https://hackmd.io/_uploads/ByGgJn24A.png)
+    ![image](https://github.com/letitia7588/BrainComputerFinal/assets/170433140/434e061c-6548-4ac1-a602-483b0cf76f49)
+
     
-    ![image](https://hackmd.io/_uploads/BkW8fp3VC.png)
+    ![image](https://github.com/letitia7588/BrainComputerFinal/assets/170433140/a2428880-ce69-4725-8aed-bff9bebc168e)
+
 
 
 
@@ -132,7 +140,8 @@ Authors: 111064514 柯昱鈴 112062674 羅士軒 112065501 簡辰穎
  - F1 score
  	- (!!!put confusion matrix here)
  	- In this paper[[5]](#ref5), human emotions can be classified to 4 parts. X-axis indicates emotion positive or negative. And y-axis indicates the degree of activity. And the 4 classification will display more different to each other. Our results prove it well. (如果沒有證出這個結果那就刪掉XD)(還沒檢查文法)
- 	- ![image](https://hackmd.io/_uploads/SyGyT22VC.png)
+ 	- ![image](https://github.com/letitia7588/BrainComputerFinal/assets/170433140/d8339acf-6133-4997-bc65-2b59086f30d8)
+
 
 
 
