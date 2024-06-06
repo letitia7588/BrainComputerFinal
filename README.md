@@ -113,15 +113,19 @@ CNNs have been used to analyze emotion EEG signals in this paper [[5]](#ref5) an
  	- Maxpooling layer
  		- It can be used to extract certain features and reduce the dataset to accelerate convergence. However, in some situations, it may lose some data and decrease the accuracy rate. In our dataset, it performs well without using pooling layer, improving the accuracy of both the training set and the test set.
  		- Without maxpooling layer
+   
 			![image](https://hackmd.io/_uploads/r14fVSAEA.png)
 		- With maxpooling layer(window size = 2)
+  
 			![image](https://hackmd.io/_uploads/rkZiRNANR.png)
 
  	- Dropout layer
  		- It can be used to resolve the overffting issue
  			- Without dropout layer
+      
  			![image](https://hackmd.io/_uploads/By70p4CER.png)
  			- With dropout layer(dropout rate = 0.1)
+      
  			![image](https://hackmd.io/_uploads/rkxJpNRER.png)
  - **Machine Learning Method**
  
@@ -156,17 +160,20 @@ To run dataprocess.py, gradient_boosting_classifier.py, decision_tree_classifier
  	- dropout layer
  		- We found that adding a dropout layer effectively reduces overfitting, so we incorporated a dropout layer into our model.
 	- model summary:
+   
  	![image](https://hackmd.io/_uploads/HJdDsGyHA.png)
 
 ## Results
  - **CNN(training data is EEG signal)**
   	- accuracy: 0.570
+     
  ![image](https://hackmd.io/_uploads/rJoenG1B0.png)
 
  	- precision: 0.5697314293373466
 	- recall: 0.5695850329352139
 	- F1-score: 0.5696160462000721
 	- confusion_matrix:
+ 
 	![image](https://hackmd.io/_uploads/SJ1i9zkBR.png)
 
 	
@@ -181,7 +188,8 @@ To run dataprocess.py, gradient_boosting_classifier.py, decision_tree_classifier
  	- precision: 0.398350919370576
 	- recall: 0.3979694160429126
 	- F1-score: 0.3980683968759325
-	- confusion_matrix: 
+	- confusion_matrix:
+   
 ![image](https://hackmd.io/_uploads/H11P27yrR.png)
 
  - **Machine Learning Model** 
