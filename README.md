@@ -168,16 +168,15 @@ To run dataprocess.py, gradient_boosting_classifier.py, decision_tree_classifier
   	- accuracy: 0.570
      
  ![image](https://hackmd.io/_uploads/rJoenG1B0.png)
-
- 	- precision: 0.5697314293373466
+ 
+	- precision: 0.5697314293373466
 	- recall: 0.5695850329352139
 	- F1-score: 0.5696160462000721
 	- confusion_matrix:
  
-	![image](https://github.com/letitia7588/BrainComputerFinal/assets/170433140/b487c342-6e95-499b-9cce-1fce664a58ab)
+![image](https://github.com/letitia7588/BrainComputerFinal/assets/170433140/d6fbd137-eb1f-4b55-b708-26fcdf31e7cd)
 
-
-	
+ 
  - **CNN(training data is frequency of EEG signal)**
   	- accuracy: 0.398
   	(We found that the accuracy rate decreases as the number of subjects increases. This is because, as the number of subjects increases, data discrepancy becomes more pronounced. Below is the accuracy for different numbers of subjects.)
