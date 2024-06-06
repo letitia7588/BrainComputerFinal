@@ -138,15 +138,15 @@ CNNs have been used to analyze emotion EEG signals in this paper [[5]](#ref5) an
 ## Usage
 
 ```
+To run EEG_signal_preprocess.m:
+    please install Signal Processing Toolbox and Wavelet Toolbox first.
+
 To run CNN model:
 	1. download data from kaggle(https://www.kaggle.com/datasets/sigfest/database-for-emotion-recognition-system-gameemo)
 	2. python version: Python 3.9.12
 	3. pip install packages: pandas, numpy, matplotlib, scipy, random, keras, tensorflow, sklearn, itertools
 	4. run "CNN use EEG signal to train.ipynb" and "CNN use fft of EEG to train.ipynb" file that in our github
 	
-To run EEG_signal_preprocess.m:
-    please install Signal Processing Toolbox and Wavelet Toolbox first.
-
 To run dataprocess.py, gradient_boosting_classifier.py, decision_tree_classifier.py, KNN_classifier.py, user can run directly (ex:py KNN_classifier.py )
 ```
 
