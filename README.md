@@ -42,17 +42,20 @@ Authors: 111064514 柯昱鈴 112062674 羅士軒 112065501 簡辰穎
     - Surveying and analyzing existing literature
         - The reason for choosing the GAMEEMO dataset is its prevalent use in recent EEG-based emotional classification studies, indicating its reliability for such research.[[2]](#ref2)[[3]](#ref3)[[4]](#ref4) We referenced [Khan and Rasool (2022)](#ref2) for our entire data preprocessing approach, aligning our steps with those learned from the course.
         - classifier:
-        	- Decision tree: Decision tree not like Linear Regression, Logistic Regression cannot classified complex dataset(ex: type A data maybe located at both internal and external(Graphically speaking) of the other type data）. And if decision tree model is overfitting, we can easily decrease layers number to resolve. And to this method, someone have tried it to analysis other emotion EEG dataset before[[5]](#ref5) and get good achievement.(還沒檢查文法)
-        	- KNN: KNN can be used to recongnize data from n-dimension to some classifications. Dimension number n is our feature count. And K is the neighbor count which are used to vote the classifition. In the paper [[6]](#ref6), Author used this method to classified people's emotion EEG data and get good achievemen. So we apply it to our research.(還沒檢查文法)
-        	- Gradient Boosting Classifier: The basis of Boosting algorithm is used weak learner(low complexity and low accuracy, ex: one layer decision tree) to generate a strong learner. This method have a benifit: weak learner not easy to overfitting, so the strong learner have the advantage, too. And the Gradient Boosting can be apply on different loss function, for ex: regression. Create a model to predict the residual between weak learner and expected result. And then plus it to weak learner. Repeated above method. At last create a strong learner. This method be used to classified people's emotion, too. Paper: [[7]](#ref7)(還沒檢查文法)
+        	- CNN: Unlike traditional machine learning methods, CNNs can be used on training data without manually extracted features. This leads to two situations:
+
+				- Features may not be ignored by researchers.
+				- Important features cannot be extracted from signal data in advance.
+CNNs have been used to analyze emotion EEG signals in this paper [[5]](#ref5) and have achieved high accuracy.
+        	- Decision Tree: Unlike Linear Regression and Logistic Regression, Decision Trees can classify complex datasets (e.g., type A data may be located both inside and outside of the other type of data, graphically speaking). If a Decision Tree model is overfitting, we can easily reduce the number of layers to resolve this issue. This method has been tried before to analyze other emotion EEG datasets [[6]](#ref6) and has achieved good results.
+        	- KNN: KNN can be used to recognize data from n-dimensions into several classifications. The number of dimensions, n, is our feature count. K is the number of neighbors used to vote on the classification. In the paper [[7]](#ref7), the author used this method to classify people's emotion EEG data and achieved good results. Therefore, we apply it to our research.
+        	- Gradient Boosting Classifier: The basis of the Boosting algorithm is to use weak learners (low complexity and low accuracy, e.g., one-layer decision trees) to generate a strong learner. This method has a benefit: weak learners are not easily overfitted, so the strong learner has this advantage as well. Gradient Boosting can be applied to different loss functions, such as regression. It creates a model to predict the residual between the weak learner and the expected result, then adds this to the weak learner. This process is repeated to ultimately create a strong learner. This method is also used to classify people's emotions, as described in paper[[8]](#ref8).
 
         
 
     - Analyzing the hidden independent components within EEG using ICA with ICLabel
     
-      ![image](https://github.com/letitia7588/BrainComputerFinal/assets/170433140/f87885ac-afa9-4b6c-9100-8158667c2123)
-
-
+      ![截圖 2024-05-31 凌晨12.29.47](https://hackmd.io/_uploads/Bk0iY7UVA.png)
 
 
 
@@ -61,8 +64,7 @@ Authors: 111064514 柯昱鈴 112062674 羅士軒 112065501 簡辰穎
 
 - The picture below is our BCI architecture
 
-    ![image](https://github.com/letitia7588/BrainComputerFinal/assets/170433140/5afc10bd-12a0-4bb9-9bdd-e824b7c8f212)
-
+    ![截圖 2024-06-03 下午2.24.16](https://hackmd.io/_uploads/rkPj5Ei4C.png =700x)
     
 - Input/Output Mechanisms:
     - Input: Raw EEG data collected from subjects using the EMOTIV EPOC+ EEG device.
@@ -74,11 +76,15 @@ Authors: 111064514 柯昱鈴 112062674 羅士軒 112065501 簡辰穎
 - Feature Extraction Approaches:
     - We proceeded with feature extraction, referencing [Khan and Rasool (2022)](#ref2). The features were categorized into three domains, as shown in the table below:
         
-    ![image](https://github.com/letitia7588/BrainComputerFinal/assets/170433140/922078ba-13e1-4b05-bb39-6cb9de93472b)
+    ![截圖 2024-06-03 下午1.53.46](https://hackmd.io/_uploads/By1c5Rq4A.png)
+- Classification
 
-
-  After transforming the data, we applied three different machine learning models to classify the emotions:
-
+  After transforming the data, we applied three different machine learning models and CNN model to classify the emotions:
+  
+    * **CNN(training data is EEG signal)**
+    	- CNN is usually used to classify images, but it can also be used to classify 1-D data. We can modify our original 2-D CNN model by converting its layers (convolution, pooling, etc.) from 2-D to 1-D. This will allow the model to achieve accuracy similar to that of a 2-D CNN model. For training, we split the original data (channel AF4) into 1 seconds segments, resulting in a total of 33,600 data.
+    * **CNN(training data is frequency of EEG signal)**
+		- As mentioned above, CNN can also be used on frequency domain data because both are 1-D. Therefore, we applied this method to the frequency data of 1-second EEG signals that were separated from the original 5-minute data (channel AF4), resulting in a total of 33,600 data points.
     * **Gradient Boosting**
         * Gradient Boosting is an ensemble learning method that builds multiple decision trees sequentially to improve the model's performance.
     * **K-Nearest Neighbors (KNN)**
@@ -86,64 +92,142 @@ Authors: 111064514 柯昱鈴 112062674 羅士軒 112065501 簡辰穎
     * **Decision Tree**
         * A Decision Tree is a model that splits the data into branches to represent the decisions and their possible consequences, including outcomes.
     
-    As for the dataset, we compare the differences with data from specific channel and hybrid features to all the channel and features.
+    For the three machine learning models, we compare the differences with data from specific channel and hybrid features to all the channel and features.
     
     The hybrid features are shown in the below table[[2]](#ref2):
     
-    ![image](https://github.com/letitia7588/BrainComputerFinal/assets/170433140/5a213ea0-0969-4242-925c-27d894116c72)
-
+    ![螢幕擷取畫面 2024-06-04 230835](https://hackmd.io/_uploads/Ska66a24R.png)
     
     The reason of choosing hybrid data is that it is proved to have higher importance[[2]](#ref2).
 
     
     The data was divided into training and testing sets with a 6:4 split.
 
-- Evaluation
-
-    The results show that the Gradient Boosting model performed the best among the three models. Specifically, with hybrid features from all channels achieved the highest performance with an accuracy of 0.58 on the raw data. The Decision Tree performed better with all features from all channels, achieving a precision of 0.56 on the raw data. Lastly, KNN achieved a performance of 0.38 with hybrid features from the specific channel type on the raw data.
-    On the other hand, for all the emotion classes, we found out that boring was classified the best among all the classes with 0.42 of precision, while horror was the worst, only achives 0.3.  
-
-    The following tables show the experiment results of each model and the classifiction precesion of each emotion class (0.4 is the ratio of the testing set) :
     
-    * **Gradient Boosting**
-    
-    ![image](https://github.com/letitia7588/BrainComputerFinal/assets/170433140/23a05592-9560-4e11-98f2-91861a57703e)
-
-    
-    ![image](https://github.com/letitia7588/BrainComputerFinal/assets/170433140/fdb5e1e7-9875-4e53-bd7b-8077b41a6fc9)
-
-    
-    * **Decision Tree**
-    
-    ![image](https://github.com/letitia7588/BrainComputerFinal/assets/170433140/bd51e9a4-4e17-402b-a9e3-46f9850b9715)
-
-    
-    ![image](https://github.com/letitia7588/BrainComputerFinal/assets/170433140/9a7f9043-558c-407f-980e-16bf8792e6f4)
-
-    
-    * **KNN**
-    
-    ![image](https://github.com/letitia7588/BrainComputerFinal/assets/170433140/434e061c-6548-4ac1-a602-483b0cf76f49)
-
-    
-    ![image](https://github.com/letitia7588/BrainComputerFinal/assets/170433140/a2428880-ce69-4725-8aed-bff9bebc168e)
-
 
 
 
 
 ## Validation
+ - **CNN**
+ 	- Maxpooling layer
+ 		- It can be used to extract certain features and reduce the dataset to accelerate convergence. However, in some situations, it may lose some data and decrease the accuracy rate. In our dataset, it performs well without using pooling layer, improving the accuracy of both the training set and the test set.
+ 		- Without maxpooling layer
+			![image](https://hackmd.io/_uploads/r14fVSAEA.png)
+		- With maxpooling layer(window size = 2)
+			![image](https://hackmd.io/_uploads/rkZiRNANR.png)
+
+ 	- Dropout layer
+ 		- It can be used to resolve the overffting issue
+ 			- Without dropout layer
+ 			![image](https://hackmd.io/_uploads/By70p4CER.png)
+ 			- With dropout layer(dropout rate = 0.1)
+ 			![image](https://hackmd.io/_uploads/rkxJpNRER.png)
+ - **Machine Learning Method**
+ 
+    * K-fold cross validation
+    Cross-validation is a resampling technique used to evaluate machine learning models by splitting the dataset into multiple subsets (folds), training the model on a subset, and evaluating it on the remaining subsets.
+    ![image](https://hackmd.io/_uploads/r13I6XJB0.png)
+
 
 ## Usage
 
+```
+To run CNN model:
+	1. download data from kaggle(https://www.kaggle.com/datasets/sigfest/database-for-emotion-recognition-system-gameemo)
+	2. python version: Python 3.9.12
+	3. pip install packages: pandas, numpy, matplotlib, scipy, random, keras, tensorflow, sklearn, itertools
+	4. run "CNN use EEG signal to train.ipynb" and "CNN use fft of EEG to train.ipynb" file that in our github
+	
+To run EEG_signal_preprocess.m:
+    please install Signal Processing Toolbox and Wavelet Toolbox first.
+
+To run dataprocess.py, gradient_boosting_classifier.py, decision_tree_classifier.py, KNN_classifier.py, user can run directly (ex:py KNN_classifier.py )
+```
+
+ - **CNN**
+ 	- Use two size 3 filter of convolution layer to replace size 5 filter
+ 		- This can improve convolution efficiency without a decrease in effectiveness.
+ 		 ![image](https://hackmd.io/_uploads/ByEEbH0VC.png)
+
+ 	- maxpooling layer
+ 		- As the results shown above, we found that the model can achieve better performance without using maxpooling layer. Therefore, we did not use maxpooling layer in our model.
+
+ 	- dropout layer
+ 		- We found that adding a dropout layer effectively reduces overfitting, so we incorporated a dropout layer into our model.
+	- model summary:
+ 	![image](https://hackmd.io/_uploads/HJdDsGyHA.png)
+
 ## Results
- - F1 score
- 	- (!!!put confusion matrix here)
- 	- In this paper[[5]](#ref5), human emotions can be classified to 4 parts. X-axis indicates emotion positive or negative. And y-axis indicates the degree of activity. And the 4 classification will display more different to each other. Our results prove it well. (如果沒有證出這個結果那就刪掉XD)(還沒檢查文法)
- 	- ![image](https://github.com/letitia7588/BrainComputerFinal/assets/170433140/d8339acf-6133-4997-bc65-2b59086f30d8)
+ - **CNN(training data is EEG signal)**
+  	- accuracy: 0.570
+ ![image](https://hackmd.io/_uploads/rJoenG1B0.png)
+
+ 	- precision: 0.5697314293373466
+	- recall: 0.5695850329352139
+	- F1-score: 0.5696160462000721
+	- confusion_matrix:
+	![image](https://hackmd.io/_uploads/SJ1i9zkBR.png)
+
+	
+ - **CNN(training data is frequency of EEG signal)**
+  	- accuracy: 0.398
+  	(We found that the accuracy rate decreases as the number of subjects increases. This is because, as the number of subjects increases, data discrepancy becomes more pronounced. Below is the accuracy for different numbers of subjects.)
+	![image](https://hackmd.io/_uploads/ryxcHm1SA.png)
+	![image](https://hackmd.io/_uploads/BkAPUQJBC.png)
+	![image](https://hackmd.io/_uploads/BkFfimyH0.png)
 
 
+ 	- precision: 0.398350919370576
+	- recall: 0.3979694160429126
+	- F1-score: 0.3980683968759325
+	- confusion_matrix: 
+![image](https://hackmd.io/_uploads/H11P27yrR.png)
 
+ - **Machine Learning Model** 
+
+   ![image](https://hackmd.io/_uploads/ByRkIzyrR.png)
+
+
+   The results is shown in the above table. We can found that the Gradient Boosting model performed the best among the three models. Specifically, with hybrid features from all channels achieved the highest performance with an accuracy of 0.58 on the raw data. The Decision Tree performed better with all features from all channels, achieving a precision of 0.56 on the raw data. Lastly, KNN achieved a performance of 0.38 with hybrid features from the specific channel type on the raw data.
+    On the other hand, for all the emotion classes, we found out that boring was classified the best among all the classes with 0.42 of precision, while horror was the worst, only achives 0.3.  
+    
+    The following tables show the thorough accuracy of each model, the classifiction precision of each emotion class (0.4 is the ratio of the testing set), and the confusion matrix :
+    
+    * **Gradient Boosting**
+    
+    ![image](https://hackmd.io/_uploads/BJKEk334R.png)
+    
+    ![image](https://hackmd.io/_uploads/Hkc_B2hEA.png)
+    
+    ![Gradient_Boosting](https://hackmd.io/_uploads/rkXf-7JrC.png)
+
+    * **Decision Tree**
+    
+    ![image](https://hackmd.io/_uploads/BycUe33VA.png)
+    
+    ![image](https://hackmd.io/_uploads/SkryIhnN0.png)
+    
+    ![Decision_Tree](https://hackmd.io/_uploads/HJQ-mXkr0.png)
+
+
+    * **KNN**
+    
+    ![image](https://hackmd.io/_uploads/ByGgJn24A.png)
+    
+    ![image](https://hackmd.io/_uploads/BkW8fp3VC.png)
+    
+    ![KNN](https://hackmd.io/_uploads/Bkfm-XyS0.png)
+    
+ - Advantages and unique aspects 
+    The following table shows the overall performance of the competing model from [[2]](#ref2) :
+    ![螢幕擷取畫面 2024-06-06 202257](https://hackmd.io/_uploads/Syf2qX1HA.png)
+    ![螢幕擷取畫面 2024-06-06 202306](https://hackmd.io/_uploads/SyznqmJHR.png)
+    ![image](https://hackmd.io/_uploads/HJ9JiXkSR.png)
+
+
+    Our system, while not achieving top-tier accuracy, showcases our thorough exploration of various features, machine learning models, and deep learning techniques.From the observation with confusion matrix, we found out that some EEG data are easily mixed with others, such as calm and funny. Their EEG data may have something in common. 
+    On the other hand, we've developed a game that can adjust the difficuties by classifying the players' emotion in time.
 
 
 ## References
@@ -155,12 +239,10 @@ Authors: 111064514 柯昱鈴 112062674 羅士軒 112065501 簡辰穎
 
 <a id="ref4"></a>[4] Alakus, T. B., & Turkoglu, I. J. E. L. (2020). Emotion recognition with deep learning using GAMEEMO data set. Electronics Letters, 56(25), 1364-1367.[[pdf]](https://ietresearch.onlinelibrary.wiley.com/doi/10.1049/el.2020.2460)
 
-<a id="ref5"></a>[5] Rafal Chalupnik, Katarzyna Bialas, Zofia Majewska & Michal Kedziora.(2022).Using Simplified EEG-Based Brain Computer Interface and Decision Tree Classifier for Emotions Detection[[pdf]](https://link.springer.com/chapter/10.1007/978-3-030-99587-4_26)
-
-<a id="ref6"></a>[6] Shashank Joshi, Falak Joshi.(2021).HUMAN EMOTION CLASSIFICATION BASED ON EEG SIGNALS USING RECURRENT NEURAL NETWORK AND KNN[[pdf]](https://arxiv.org/abs/2205.08419)
-
-<a id="ref7"></a>[7] Manish Manohare, E. Rajasekar, Manoranjan Parida.(2023).Electroencephalography based classification of emotions associated with road traffic noise using Gradient boosting algorithm[[pdf]](https://www.sciencedirect.com/science/article/abs/pii/S0003682X23001044)
-
 <a id="ref5"></a>[5] Suat Toraman and Ömer Osman Dursun.(2021).GameEmo-CapsNet: Emotion Recognition from Single-Channel EEG Signals Using the 1D Capsule Networks[[pdf]](https://www.researchgate.net/publication/357772057_GameEmo-CapsNet_Emotion_Recognition_from_Single-Channel_EEG_Signals_Using_the_1D_Capsule_Networks)
 
-<a id="ref5"></a>[5] T. B. Alakus and I. Turkoglu.(2020).Emotion recognition with deep learningusing GAMEEMO data set[[pdf]](https://ietresearch.onlinelibrary.wiley.com/doi/epdf/10.1049/el.2020.2460)
+<a id="ref6"></a>[6] Rafal Chalupnik, Katarzyna Bialas, Zofia Majewska & Michal Kedziora.(2022).Using Simplified EEG-Based Brain Computer Interface and Decision Tree Classifier for Emotions Detection[[pdf]](https://link.springer.com/chapter/10.1007/978-3-030-99587-4_26)
+
+<a id="ref7"></a>[7] Shashank Joshi, Falak Joshi.(2021).HUMAN EMOTION CLASSIFICATION BASED ON EEG SIGNALS USING RECURRENT NEURAL NETWORK AND KNN[[pdf]](https://arxiv.org/abs/2205.08419)
+
+<a id="ref8"></a>[8] Manish Manohare, E. Rajasekar, Manoranjan Parida.(2023).Electroencephalography based classification of emotions associated with road traffic noise using Gradient boosting algorithm[[pdf]](https://www.sciencedirect.com/science/article/abs/pii/S0003682X23001044)
