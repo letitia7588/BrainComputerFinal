@@ -161,13 +161,15 @@ To run dataprocess.py, gradient_boosting_classifier.py, decision_tree_classifier
 ## Results
  - **CNN(training data is EEG signal)**
   	- accuracy: 0.570
- ![image](https://hackmd.io/_uploads/rJoenG1B0.png)
+ ![image](https://github.com/letitia7588/BrainComputerFinal/assets/170433140/219c415c-0593-4b3a-aa4a-f38e0fe42223)
+
 
  	- precision: 0.5697314293373466
 	- recall: 0.5695850329352139
 	- F1-score: 0.5696160462000721
 	- confusion_matrix:
-	![image](https://hackmd.io/_uploads/SJ1i9zkBR.png)
+	![image](https://github.com/letitia7588/BrainComputerFinal/assets/170433140/5d7ee157-b53b-46cc-a7e5-989b8df047ec)
+
 
 	
  - **CNN(training data is frequency of EEG signal)**
