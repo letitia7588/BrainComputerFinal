@@ -168,7 +168,8 @@ To run dataprocess.py, gradient_boosting_classifier.py, decision_tree_classifier
   	- accuracy: 0.570
      
  ![image](https://hackmd.io/_uploads/rJoenG1B0.png)
- 	- precision: 0.5697314293373466
+ 
+	- precision: 0.5697314293373466
 	- recall: 0.5695850329352139
 	- F1-score: 0.5696160462000721
 	- confusion_matrix:
