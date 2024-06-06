@@ -64,7 +64,7 @@ CNNs have been used to analyze emotion EEG signals in this paper [[5]](#ref5) an
 
 - The picture below is our BCI architecture
 
-    ![截圖 2024-06-03 下午2.24.16](https://hackmd.io/_uploads/rkPj5Ei4C.png =700x)
+    ![截圖 2024-06-03 下午2.24.16](https://hackmd.io/_uploads/rkPj5Ei4C.png)
     
 - Input/Output Mechanisms:
     - Input: Raw EEG data collected from subjects using the EMOTIV EPOC+ EEG device.
