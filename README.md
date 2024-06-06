@@ -174,7 +174,8 @@ To run dataprocess.py, gradient_boosting_classifier.py, decision_tree_classifier
 	- F1-score: 0.5696160462000721
 	- confusion_matrix:
  
-	![image](https://hackmd.io/_uploads/SJ1i9zkBR.png)
+	![image](https://github.com/letitia7588/BrainComputerFinal/assets/170433140/b487c342-6e95-499b-9cce-1fce664a58ab)
+
 
 	
  - **CNN(training data is frequency of EEG signal)**
