@@ -110,6 +110,7 @@ CNNs have been used to analyze emotion EEG signals in this paper [[5]](#ref5) an
 
 ## Validation
  - **CNN**
+	- We predict the accuracy of our test dataset in each epoch to determine whether our method is effective. This validation method also helps us identify the optimal number of layers.
  	- Maxpooling layer
  		- It can be used to extract certain features and reduce the dataset to accelerate convergence. However, in some situations, it may lose some data and decrease the accuracy rate. In our dataset, it performs well without using pooling layer, improving the accuracy of both the training set and the test set.
  		- Without maxpooling layer
